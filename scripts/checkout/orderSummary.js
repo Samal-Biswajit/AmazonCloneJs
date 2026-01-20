@@ -5,6 +5,28 @@ import { updateCartQuantity } from "../utils/cartQuantity.js";
 import dayjs from "https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js";
 import { deliveryOptions, getDeliveryOption } from "../../data/deliveryOption.js";
 import { renderPaymentSummary } from "./paymentSummary.js";
+
+function isWeekend(date) {
+  const day = date.day();
+  return day === 0 || day === 6;
+}
+
+function calculateDeliveryDate(deliveryDays) {
+  let date = dayjs();
+  let remainingDays = deliveryDays;
+
+  while (remainingDays > 0) {
+    date = date.add(1, "day");
+
+    if (!isWeekend(date)) {
+      remainingDays--;
+    }
+  }
+
+  return date;
+}
+
+
 export function renderOrderSummary() {
   let cartSummaryHTML = "";
 
@@ -16,8 +38,7 @@ export function renderOrderSummary() {
     const deliveryOptionId = cartItem.deliveryOptionId;
     const deliveryOption = getDeliveryOption(deliveryOptionId);
 
-    const today = dayjs();
-    const deliveryDate = today.add(deliveryOption.deliveryDays, "days");
+    const deliveryDate = calculateDeliveryDate(deliveryOption.deliveryDays);
     const dateString = deliveryDate.format("dddd, MMMM, D");
 
     cartSummaryHTML += `
@@ -75,8 +96,7 @@ export function renderOrderSummary() {
     let html = "";
 
     deliveryOptions.forEach((deliveryOption) => {
-      const today = dayjs();
-      const deliveryDate = today.add(deliveryOption.deliveryDays, "days");
+     const deliveryDate = calculateDeliveryDate(deliveryOption.deliveryDays);
       const dateString = deliveryDate.format("dddd, MMMM, D");
       const priceString =
         deliveryOption.priceCents === 0
