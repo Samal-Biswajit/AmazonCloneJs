@@ -1,87 +1,91 @@
-import { addToCart} from "../data/cart.js";
-import { products } from "../data/products.js";
+import { addToCart } from "../data/cart.js";
+import { products, loadProducts } from "../data/products.js";
 import { formatCurrency } from "./utils/money.js";
 import { updateCartQuantity } from "./utils/cartQuantity.js";
 
-let productsHTML = "";
-let hideTimeout = null;
+loadProducts(renderProductsGrid);
 
-updateCartQuantity('.js-cart-quantity');
+function renderProductsGrid() {
+  let productsHTML = "";
+  let hideTimeout = null;
 
-products.forEach((product) => {
-  productsHTML += `
-          <div class="product-container">
-              <div class="product-image-container">
-                <img class="product-image"
-                  src="${product.image}">
-              </div>
+  updateCartQuantity(".js-cart-quantity");
 
-              <div class="product-name limit-text-to-2-lines">
-                ${product.name}
-              </div>
-
-              <div class="product-rating-container">
-                <img class="product-rating-stars"
-                  src="images/ratings/rating-${product.rating.stars * 10}.png">
-                <div class="product-rating-count link-primary">
-                ${product.rating.count}
+  products.forEach((product) => {
+    productsHTML += `
+            <div class="product-container">
+                <div class="product-image-container">
+                  <img class="product-image"
+                    src="${product.image}">
                 </div>
-              </div>
 
-              <div class="product-price">
-              $${formatCurrency(product.priceCents)}
-              </div>
+                <div class="product-name limit-text-to-2-lines">
+                  ${product.name}
+                </div>
 
-              <div class="js-quantity-selector product-quantity-container">
-                <select>
-                  <option selected value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10">10</option>
-                </select>
-              </div>
+                <div class="product-rating-container">
+                  <img class="product-rating-stars"
+                    src="images/ratings/rating-${product.rating.stars * 10}.png">
+                  <div class="product-rating-count link-primary">
+                  ${product.rating.count}
+                  </div>
+                </div>
 
-              <div class="product-spacer"></div>
+                <div class="product-price">
+                $${formatCurrency(product.priceCents)}
+                </div>
 
-              <div class="added-to-cart js-added-to-cart">
-                <img src="images/icons/checkmark.png">
-                Added
-              </div>
+                <div class="js-quantity-selector product-quantity-container">
+                  <select>
+                    <option selected value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                  </select>
+                </div>
 
-              <button class="add-to-cart-button button-primary
-              js-add-to-cart"
-              data-product-id = "${product.id}">
-                Add to Cart
-              </button>
-            </div>`;
-});
+                <div class="product-spacer"></div>
 
-document.querySelector(".js-products-grid").innerHTML = productsHTML;
+                <div class="added-to-cart js-added-to-cart">
+                  <img src="images/icons/checkmark.png">
+                  Added
+                </div>
 
-function addedMessage(productContainer) {
-  const addedToCart = productContainer.querySelector(".js-added-to-cart");
-
-   addedToCart.classList.add("show-added");
-  clearTimeout(hideTimeout);
-
-  hideTimeout = setTimeout(() => {
-    addedToCart.classList.remove("show-added");
-  }, 2000);
-}
-
-document.querySelectorAll(".js-add-to-cart").forEach((button) => {
-  button.addEventListener("click", () => {
-    const { productId } = button.dataset;
-    const productContainer = button.closest(".product-container");
-
-    addToCart(productId, productContainer);
-    addedMessage(productContainer);
-    updateCartQuantity('.js-cart-quantity');
+                <button class="add-to-cart-button button-primary
+                js-add-to-cart"
+                data-product-id = "${product.id}">
+                  Add to Cart
+                </button>
+              </div>`;
   });
-});
+
+  document.querySelector(".js-products-grid").innerHTML = productsHTML;
+
+  function addedMessage(productContainer) {
+    const addedToCart = productContainer.querySelector(".js-added-to-cart");
+
+    addedToCart.classList.add("show-added");
+    clearTimeout(hideTimeout);
+
+    hideTimeout = setTimeout(() => {
+      addedToCart.classList.remove("show-added");
+    }, 2000);
+  }
+
+  document.querySelectorAll(".js-add-to-cart").forEach((button) => {
+    button.addEventListener("click", () => {
+      const { productId } = button.dataset;
+      const productContainer = button.closest(".product-container");
+
+      addToCart(productId, productContainer);
+      addedMessage(productContainer);
+      updateCartQuantity(".js-cart-quantity");
+    });
+  });
+}
