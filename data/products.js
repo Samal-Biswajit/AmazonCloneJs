@@ -16,9 +16,7 @@ export function loadProducts(fun){
 
   xhr.addEventListener('load',()=>{
     products = JSON.parse(xhr.response);
-
     console.log('load products');
-
     fun();
   });
 
